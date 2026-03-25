@@ -2,7 +2,7 @@
   "name": "live-quiz-game",
   "version": "1.0.0",
   "description": "Real-time Live Quiz Game with WebSocket",
-  "private": false,
+  "private": true,
   "workspaces": [
     "server",
     "client"
@@ -19,10 +19,9 @@
     "websocket",
     "quiz",
     "game",
-    "real-time",
-    "task"
+    "real-time"
   ],
-  "author": "AlreadyBored(FE) & MaryAnzh(server)",
+  "author": "",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^9.1.2"
