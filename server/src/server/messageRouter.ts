@@ -10,6 +10,7 @@ type HandlerMap = {
     [REG]: MessageCallbackType<T.RegData>,
     [CREATE_GAME]: MessageCallbackType<T.CreateGameData>,
     [JOIN_GAME]: MessageCallbackType<T.JoinGameData>,
+    [JOIN_GAME]: MessageCallbackType<T.JoinGameData>,
 };
 
 const handlers: HandlerMap = {
