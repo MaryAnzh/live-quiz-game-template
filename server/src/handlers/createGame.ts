@@ -32,7 +32,8 @@ export function createGameHandler(ws: WebSocket, data: T.CreateGameData, id: num
         code,
         hostId,
         questions: data.questions,
-        players: [hostPlayer],   // ← хост сразу в списке игроков
+        // host add to players
+        players: [hostPlayer],
         currentQuestion: -1,
         status: WAITING,
         questionStartTime: undefined,

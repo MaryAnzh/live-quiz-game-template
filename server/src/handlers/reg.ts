@@ -30,7 +30,8 @@ export function regHandler(ws: WebSocket, data: T.RegData | null) {
                 name,
                 index: '',
                 error: true,
-                errorText: error   // здесь будет "Wrong password"
+                // wrong password
+                errorText: error
             },
             id: 0
         }));

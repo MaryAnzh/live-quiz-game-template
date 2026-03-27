@@ -47,13 +47,11 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
         return;
     }
 
-    // Стартуем игру
     game.status = IN_PROGRESS;
     game.currentQuestion = 0;
     game.questionStartTime = Date.now();
     game.playerAnswers = new Map();
 
-    // Сбрасываем состояние игроков
     game.players.forEach(p => {
         p.hasAnswered = false;
         p.answeredCorrectly = false;
@@ -69,7 +67,6 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
         timeLimitSec: question.timeLimitSec
     };
 
-    // Broadcast: question
     game.players.forEach(p => {
         p.ws?.send(JSON.stringify({
             type: 'question',
@@ -78,7 +75,6 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
         }));
     });
 
-    // Broadcast: update_players
     const publicPlayers = game.players.map(({ name, index, score }) => ({
         name,
         index,
@@ -93,8 +89,8 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
         }));
     });
 
-    // Таймер вопроса
     game.questionTimer = setTimeout(() => {
-        // TODO: переход к следующему вопросу
+        // TODO: next question => next
+        // finishQuestion(game);
     }, question.timeLimitSec * 1000);
 }

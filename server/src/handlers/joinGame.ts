@@ -55,7 +55,6 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
         player.ws = ws;
     }
 
-    // Личный ответ
     ws.send(JSON.stringify({
         type: 'game_joined',
         data: { gameId: game.id },
@@ -73,7 +72,6 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
         }));
     });
 
-    // Broadcast: update_players
     const publicPlayers = game.players.map(({ name, index, score }) => ({
         name,
         index,

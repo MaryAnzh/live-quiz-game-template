@@ -4,23 +4,15 @@ import * as C from '../constants/index.js';
 import * as F from '../handlers/index.js';
 import type * as T from '../types/index.js';
 
-const { REG, CREATE_GAME, JOIN_GAME, START_GAME } = C.COMMANDS;
+const { REG, CREATE_GAME, JOIN_GAME, START_GAME, ANSWER } = C.COMMANDS;
 
-type MessageCallbackType<T> = (ws: WebSocket, data: T, id: number) => void;
-type HandlerMap = {
-    [REG]: MessageCallbackType<T.RegData>,
-    [CREATE_GAME]: MessageCallbackType<T.CreateGameData>,
-    [JOIN_GAME]: MessageCallbackType<T.JoinGameData>,
-    [JOIN_GAME]: MessageCallbackType<T.JoinGameData>,
-    [START_GAME]: MessageCallbackType<T.StartGameData>
-};
-
-const handlers: HandlerMap = {
+const handlers = {
     [REG]: F.regHandler,
     [CREATE_GAME]: F.createGameHandler,
     [JOIN_GAME]: F.joinGameHandler,
     [START_GAME]: F.startGameHandler,
-};
+    [ANSWER]: F.answerHandler,
+} as const;
 
 export function routeMessage(ws: WebSocket, raw: string) {
     let msg: T.WSMessage;

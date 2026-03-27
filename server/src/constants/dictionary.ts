@@ -15,6 +15,10 @@ export const {
     PLAYER_NOT_FOUND,
     NOT_REGISTERED,
     NOT_HOST,
+    GAME_NOT_IN_PROGRESS,
+    INVALID_QUESTION_INDEX,
+    PLAYER_NOT_IN_GAME,
+    ALREADY_ANSWERED,
 } = {
     MISSING_NAME_OR_PASS_MESSAGE: 'Missing name or password',
     WRONG_PASSWORD: 'Wrong password',
@@ -31,5 +35,9 @@ export const {
     INVALID_GAME_CODE: 'Invalid game code',
     PLAYER_NOT_FOUND: 'Player not found',
     NOT_REGISTERED: 'Not registered',
-    NOT_HOST: 'Not a host'
+    NOT_HOST: 'Not a host',
+    GAME_NOT_IN_PROGRESS: `Game doesn't in progress`,
+    INVALID_QUESTION_INDEX: 'Invalid question index',
+    PLAYER_NOT_IN_GAME: `Player doesn't in game`,
+    ALREADY_ANSWERED: 'already answered'
 }

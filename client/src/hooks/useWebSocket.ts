@@ -39,7 +39,6 @@ export const useWebSocket = (url: string) => {
 
       socket.onerror = () => {
         if (cancelled) return;
-        // onerror is always followed by onclose, reconnect logic is there
       };
 
       socket.onclose = () => {
