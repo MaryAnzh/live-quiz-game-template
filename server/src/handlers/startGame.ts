@@ -1,6 +1,6 @@
 import type { WebSocket } from 'ws';
 import { gamesStore } from '../storage/gamesStore.js';
-import { connectionRegistry } from '../server/index.js';
+import { connectionRegistry } from '../server/connectionRegistry.js';
 import * as C from '../constants/index.js';
 import type * as T from '../types/index.js';
 
@@ -12,8 +12,8 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
     if (!playerId) {
         ws.send(JSON.stringify({
             type: 'error',
-            data: { error: true, errorText: C.NOT_REGISTERED },
-            id
+            data: { message: C.NOT_REGISTERED },
+            id: 0
         }));
         return;
     }
@@ -23,8 +23,8 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
     if (!game) {
         ws.send(JSON.stringify({
             type: 'error',
-            data: { error: true, errorText: C.GAME_NOT_FOUND },
-            id
+            data: { message: C.GAME_NOT_FOUND },
+            id: 0
         }));
         return;
     }
@@ -32,8 +32,8 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
     if (game.hostId !== playerId) {
         ws.send(JSON.stringify({
             type: 'error',
-            data: { error: true, errorText: C.NOT_HOST },
-            id
+            data: { message: C.NOT_HOST },
+            id: 0
         }));
         return;
     }
@@ -41,8 +41,8 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
     if (game.status !== WAITING) {
         ws.send(JSON.stringify({
             type: 'error',
-            data: { error: true, errorText: C.GAME_ALREADY_STARTED },
-            id
+            data: { message: C.GAME_ALREADY_STARTED },
+            id: 0
         }));
         return;
     }
@@ -61,28 +61,40 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
 
     const question = game.questions[0];
 
-    // Рассылаем question_started
+    const payload = {
+        questionNumber: 1,
+        totalQuestions: game.questions.length,
+        text: question.text,
+        options: question.options,
+        timeLimitSec: question.timeLimitSec
+    };
+
+    // Broadcast: question
     game.players.forEach(p => {
         p.ws?.send(JSON.stringify({
-            type: 'question_started',
-            data: {
-                questionIndex: 0,
-                question,
-                timeLimitSec: question.timeLimitSec
-            }
+            type: 'question',
+            data: payload,
+            id: 0
         }));
     });
 
-    // Рассылаем update_players
+    // Broadcast: update_players
+    const publicPlayers = game.players.map(({ name, index, score }) => ({
+        name,
+        index,
+        score
+    }));
+
     game.players.forEach(p => {
         p.ws?.send(JSON.stringify({
             type: 'update_players',
-            data: { players: game.players }
+            data: publicPlayers,
+            id: 0
         }));
     });
 
-    // Запускаем таймер вопроса
+    // Таймер вопроса
     game.questionTimer = setTimeout(() => {
-        // TODO: переход к следующему вопросу (этап 7)
+        // TODO: переход к следующему вопросу
     }, question.timeLimitSec * 1000);
 }

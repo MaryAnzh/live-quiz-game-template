@@ -46,9 +46,7 @@ export function createGameHandler(ws: WebSocket, data: T.CreateGameData, id: num
         type: 'game_created',
         data: {
             gameId,
-            code,
-            error: false,
-            errorText: null
+            code
         },
         id
     }));

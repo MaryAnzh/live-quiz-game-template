@@ -12,14 +12,8 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
     if (!playerId) {
         ws.send(JSON.stringify({
             type: 'game_joined',
-            data: {
-                gameId: '',
-                players: [],
-                hostId: '',
-                error: true,
-                errorText: C.NOT_REGISTERED
-            },
-            id
+            data: { gameId: '' },
+            id: 0
         }));
         return;
     }
@@ -29,14 +23,8 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
     if (!game) {
         ws.send(JSON.stringify({
             type: 'game_joined',
-            data: {
-                gameId: '',
-                players: [],
-                hostId: '',
-                error: true,
-                errorText: C.GAME_NOT_FOUND
-            },
-            id
+            data: { gameId: '' },
+            id: 0
         }));
         return;
     }
@@ -44,14 +32,8 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
     if (game.status !== WAITING) {
         ws.send(JSON.stringify({
             type: 'game_joined',
-            data: {
-                gameId: game.id,
-                players: game.players,
-                hostId: game.hostId,
-                error: true,
-                errorText: C.GAME_ALREADY_STARTED
-            },
-            id
+            data: { gameId: '' },
+            id: 0
         }));
         return;
     }
@@ -60,7 +42,7 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
 
     if (!player) {
         player = {
-            name: `Player ${game.players.length + 1}`, // FE позже обновит имя
+            name: `Player ${game.players.length + 1}`,
             passwordHash: '',
             index: playerId,
             score: 0,
@@ -73,29 +55,36 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
         player.ws = ws;
     }
 
+    // Личный ответ
     ws.send(JSON.stringify({
         type: 'game_joined',
-        data: {
-            gameId: game.id,
-            players: game.players,
-            hostId: game.hostId,
-            error: false,
-            errorText: null
-        },
-        id
+        data: { gameId: game.id },
+        id: 0
     }));
 
     game.players.forEach(p => {
         p.ws?.send(JSON.stringify({
             type: 'player_joined',
-            data: { player }
+            data: {
+                playerName: player!.name,
+                playerCount: game.players.length
+            },
+            id: 0
         }));
     });
+
+    // Broadcast: update_players
+    const publicPlayers = game.players.map(({ name, index, score }) => ({
+        name,
+        index,
+        score
+    }));
 
     game.players.forEach(p => {
         p.ws?.send(JSON.stringify({
             type: 'update_players',
-            data: { players: game.players }
+            data: publicPlayers,
+            id: 0
         }));
     });
 }

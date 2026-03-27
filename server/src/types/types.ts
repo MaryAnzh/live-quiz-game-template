@@ -72,3 +72,13 @@ export type AnswerData = {
 export type JoinGameResult =
   | { ok: true; game: Game }
   | { ok: false; error: string };
+
+export type JoinPlayerType = {
+  setGameId: string;
+  setScreen: 'lobby';
+}
+
+export type PlayerJoinedMessage = {
+  playerName: string;
+  playerCount: number;
+}
