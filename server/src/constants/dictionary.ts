@@ -14,6 +14,7 @@ export const {
     INVALID_GAME_CODE,
     PLAYER_NOT_FOUND,
     NOT_REGISTERED,
+    NOT_HOST,
 } = {
     MISSING_NAME_OR_PASS_MESSAGE: 'Missing name or password',
     WRONG_PASSWORD: 'Wrong password',
@@ -29,5 +30,6 @@ export const {
     GAME_ALREADY_FINISHED: 'Game already finished',
     INVALID_GAME_CODE: 'Invalid game code',
     PLAYER_NOT_FOUND: 'Player not found',
-    NOT_REGISTERED: 'Not registered'
+    NOT_REGISTERED: 'Not registered',
+    NOT_HOST: 'Not a host'
 }

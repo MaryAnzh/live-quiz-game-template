@@ -3,7 +3,8 @@ import type { WebSocket } from 'ws';
 import * as C from '../constants/index.js';
 import * as F from '../handlers/index.js';
 import type * as T from '../types/index.js';
-const { REG, CREATE_GAME, JOIN_GAME } = C.COMMANDS;
+
+const { REG, CREATE_GAME, JOIN_GAME, START_GAME } = C.COMMANDS;
 
 type MessageCallbackType<T> = (ws: WebSocket, data: T, id: number) => void;
 type HandlerMap = {
@@ -11,12 +12,14 @@ type HandlerMap = {
     [CREATE_GAME]: MessageCallbackType<T.CreateGameData>,
     [JOIN_GAME]: MessageCallbackType<T.JoinGameData>,
     [JOIN_GAME]: MessageCallbackType<T.JoinGameData>,
+    [START_GAME]: MessageCallbackType<T.StartGameData>
 };
 
 const handlers: HandlerMap = {
     [REG]: F.regHandler,
     [CREATE_GAME]: F.createGameHandler,
     [JOIN_GAME]: F.joinGameHandler,
+    [START_GAME]: F.startGameHandler,
 };
 
 export function routeMessage(ws: WebSocket, raw: string) {

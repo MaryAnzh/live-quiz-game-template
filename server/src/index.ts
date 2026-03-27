@@ -1,5 +1,6 @@
 import { WebSocketServer } from 'ws';
-import { connectionRegistry, routeMessage } from './server/index.js';
+import { connectionRegistry } from './server/index.js';
+import { routeMessage } from './route/messageRouter.js';
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
