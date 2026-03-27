@@ -1,60 +1,43 @@
 import type { WebSocket } from 'ws';
 
-import { connectionRegistry } from '../server/index.js';
+import { connectionRegistry } from '../server/connectionRegistry.js';
 import { gamesStore } from '../storage/gamesStore.js';
-import { validateQuestions } from '../core/validateQuestions.js';
-import { generateId, generateRoomCode } from '../utils/index.js';
-import * as C from '../constants/index.js';
-import type * as T from '../types/index.js';
 
+import type * as T from '../types/index.js';
+import * as C from '../constants/index.js';
+import * as U from '../utils/index.js';
 const { WAITING } = C.GAME_STATUS;
 
 export function createGameHandler(ws: WebSocket, data: T.CreateGameData, id: number) {
     const hostId = connectionRegistry.getPlayerId(ws);
 
     if (!hostId) {
-        ws.send(JSON.stringify({
-            type: 'game_created',
-            data: {
-                gameId: '',
-                code: '',
-                error: true,
-                errorText: C.NOT_REGISTERED
-            },
-            id
-        }));
         return;
     }
 
-    const validationError = validateQuestions(data.questions);
-    if (validationError) {
-        ws.send(JSON.stringify({
-            type: 'game_created',
-            data: {
-                gameId: '',
-                code: '',
-                error: true,
-                errorText: validationError
-            },
-            id
-        }));
-        return;
-    }
+    const gameId = U.generateId();
+    const code = U.generateRoomCode();
 
-    const gameId = generateId();
-    const code = generateRoomCode();
+    const hostPlayer: T.Player = {
+        name: 'Host',
+        passwordHash: '',
+        index: hostId,
+        score: 0,
+        ws,
+        hasAnswered: false
+    };
 
     const game: T.Game = {
         id: gameId,
         code,
         hostId,
         questions: data.questions,
-        players: [],
+        players: [hostPlayer],   // ← хост сразу в списке игроков
         currentQuestion: -1,
         status: WAITING,
-        playerAnswers: new Map(),   // <-- ВАЖНО: Map, а не {}
         questionStartTime: undefined,
-        questionTimer: undefined
+        questionTimer: undefined,
+        playerAnswers: new Map(),
     };
 
     gamesStore.add(game);
