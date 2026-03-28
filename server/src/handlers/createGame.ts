@@ -6,13 +6,18 @@ import { gamesStore } from '../storage/gamesStore.js';
 import type * as T from '../types/index.js';
 import * as C from '../constants/index.js';
 import * as U from '../utils/index.js';
+import { sendError } from '../server/broadcaster.js';
 const { WAITING } = C.GAME_STATUS;
+const { CREATE_GAME } = C.COMMANDS;
 
 export function createGameHandler(ws: WebSocket, data: T.CreateGameData, id: number) {
     const hostId = connectionRegistry.getPlayerId(ws);
 
     if (!hostId) {
         return;
+    }
+    if (!data.questions || data.questions.length === 0) {
+        return sendError(ws, C.EMPTY_QUESTIONS_LIST, CREATE_GAME);
     }
 
     const gameId = U.generateId();

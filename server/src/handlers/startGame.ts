@@ -1,51 +1,34 @@
 import type { WebSocket } from 'ws';
-import { gamesStore } from '../storage/gamesStore.js';
-import { connectionRegistry } from '../server/connectionRegistry.js';
+
+import { finishQuestion } from '../core/index.js';
+import { connectionRegistry, sendError } from '../server/index.js';
+import { gamesStore } from '../storage/index.js';
+
 import * as C from '../constants/index.js';
 import type * as T from '../types/index.js';
-import { finishQuestion } from '../core/finishQuestion.js';
 
 const { WAITING, IN_PROGRESS } = C.GAME_STATUS;
+const { START_GAME } = C.COMMANDS;
 
 export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: number) {
     const playerId = connectionRegistry.getPlayerId(ws);
 
     if (!playerId) {
-        ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: C.NOT_REGISTERED },
-            id: 0
-        }));
-        return;
+        return sendError(ws, C.NOT_REGISTERED, START_GAME);
     }
 
     const game = gamesStore.getById(data.gameId);
 
     if (!game) {
-        ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: C.GAME_NOT_FOUND },
-            id: 0
-        }));
-        return;
+        return sendError(ws, C.GAME_NOT_FOUND, START_GAME);
     }
 
     if (game.hostId !== playerId) {
-        ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: C.NOT_HOST },
-            id: 0
-        }));
-        return;
+        return sendError(ws, C.NOT_HOST, START_GAME);
     }
 
     if (game.status !== WAITING) {
-        ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: C.GAME_ALREADY_STARTED },
-            id: 0
-        }));
-        return;
+        return sendError(ws, C.GAME_ALREADY_STARTED, START_GAME);
     }
 
     game.status = IN_PROGRESS;

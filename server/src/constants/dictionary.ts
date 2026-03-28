@@ -19,6 +19,11 @@ export const {
     INVALID_QUESTION_INDEX,
     PLAYER_NOT_IN_GAME,
     ALREADY_ANSWERED,
+    ANSWER_TOO_LATE,
+    INVALID_ANSWER,
+    NAME_TAKEN,
+    NO_PLAYERS,
+    EMPTY_QUESTIONS_LIST,
 } = {
     MISSING_NAME_OR_PASS_MESSAGE: 'Missing name or password',
     WRONG_PASSWORD: 'Wrong password',
@@ -35,9 +40,14 @@ export const {
     INVALID_GAME_CODE: 'Invalid game code',
     PLAYER_NOT_FOUND: 'Player not found',
     NOT_REGISTERED: 'Not registered',
-    NOT_HOST: 'Not a host',
     GAME_NOT_IN_PROGRESS: `Game doesn't in progress`,
     INVALID_QUESTION_INDEX: 'Invalid question index',
-    PLAYER_NOT_IN_GAME: `Player doesn't in game`,
-    ALREADY_ANSWERED: 'already answered'
+    NAME_TAKEN: "Name is already taken",
+    NOT_HOST: "Only host can start the game",
+    NO_PLAYERS: "Cannot start game without players",
+    ALREADY_ANSWERED: "You have already answered",
+    ANSWER_TOO_LATE: "Answer submitted too late",
+    PLAYER_NOT_IN_GAME: "Player not in this game",
+    INVALID_ANSWER: "Invalid answer index",
+    EMPTY_QUESTIONS_LIST: 'Questions list cannot be empty'
 }

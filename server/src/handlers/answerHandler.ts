@@ -1,72 +1,44 @@
 import type { WebSocket } from 'ws';
 
-import { gamesStore } from '../storage/gamesStore.js';
-import { connectionRegistry } from '../server/connectionRegistry.js';
+import { finishQuestion } from '../core/index.js';
+import { connectionRegistry, sendError } from '../server/index.js';
+import { gamesStore } from '../storage/index.js';
+
 import * as C from '../constants/index.js';
 import type * as T from '../types/index.js';
-import { finishQuestion } from '../core/finishQuestion.js';
 
 const { IN_PROGRESS } = C.GAME_STATUS;
+const { ANSWER } = C.COMMANDS;
 
 export function answerHandler(ws: WebSocket, data: T.AnswerData, id: number) {
     const playerId = connectionRegistry.getPlayerId(ws);
 
     if (!playerId) {
-        ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: C.NOT_REGISTERED },
-            id: 0
-        }));
-        return;
+        return sendError(ws, C.NOT_REGISTERED, ANSWER);
     }
 
     const game = gamesStore.getById(data.gameId);
 
     if (!game) {
-        ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: C.GAME_NOT_FOUND },
-            id: 0
-        }));
-        return;
+        return sendError(ws, C.GAME_NOT_FOUND, ANSWER);
     }
 
     if (game.status !== IN_PROGRESS) {
-        ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: C.GAME_NOT_IN_PROGRESS },
-            id: 0
-        }));
-        return;
+        return sendError(ws, C.GAME_NOT_IN_PROGRESS, ANSWER);
     }
 
     if (data.questionIndex !== game.currentQuestion) {
-        ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: C.INVALID_QUESTION_INDEX },
-            id: 0
-        }));
-        return;
+        return sendError(ws, C.INVALID_QUESTION_INDEX, ANSWER);
     }
 
     const player = game.players.find(p => p.index === playerId);
 
     if (!player) {
-        ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: C.PLAYER_NOT_IN_GAME },
-            id: 0
-        }));
-        return;
+        return sendError(ws, C.PLAYER_NOT_IN_GAME, ANSWER);
     }
 
     if (player.hasAnswered) {
-        ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: C.ALREADY_ANSWERED },
-            id: 0
-        }));
-        return;
+        return sendError(ws, C.ALREADY_ANSWERED, ANSWER);
     }
 
     const question = game.questions[game.currentQuestion];
@@ -93,6 +65,5 @@ export function answerHandler(ws: WebSocket, data: T.AnswerData, id: number) {
     if (allAnswered) {
         clearTimeout(game.questionTimer);
         finishQuestion(game);
-
     }
 }

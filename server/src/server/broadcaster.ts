@@ -27,3 +27,11 @@ export function sendToHost(game: T.Game, message: T.WSMessage) {
     const ws = connectionRegistry.getConnection(game.hostId.toString());
     if (ws) ws.send(JSON.stringify(message));
 }
+
+export function sendError(ws: WebSocket, message: string, type: string) {
+    ws.send(JSON.stringify({
+        type,
+        data: { message },
+        id: 0
+    }));
+}
