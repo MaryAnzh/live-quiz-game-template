@@ -4,6 +4,7 @@ import { gamesStore } from '../storage/gamesStore.js';
 import { connectionRegistry } from '../server/connectionRegistry.js';
 import * as C from '../constants/index.js';
 import type * as T from '../types/index.js';
+import { finishQuestion } from '../core/finishQuestion.js';
 
 const { IN_PROGRESS } = C.GAME_STATUS;
 
@@ -91,7 +92,7 @@ export function answerHandler(ws: WebSocket, data: T.AnswerData, id: number) {
 
     if (allAnswered) {
         clearTimeout(game.questionTimer);
+        finishQuestion(game);
 
-       //ToDO
     }
 }

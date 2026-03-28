@@ -46,7 +46,7 @@ export function regHandler(ws: WebSocket, data: T.RegData | null) {
             name: player.name,
             index: player.index,
             error: false,
-            errorText: null
+            errorText: ''
         },
         id: 0
     }));

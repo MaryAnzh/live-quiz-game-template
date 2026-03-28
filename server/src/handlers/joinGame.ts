@@ -3,6 +3,8 @@ import { gamesStore } from '../storage/gamesStore.js';
 import { connectionRegistry } from '../server/connectionRegistry.js';
 import * as C from '../constants/index.js';
 import type * as T from '../types/index.js';
+import { playersStore } from '../storage/playersStore.js';
+import { broadcastToGame } from '../server/broadcaster.js';
 
 const { WAITING } = C.GAME_STATUS;
 
@@ -39,10 +41,11 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
     }
 
     let player = game.players.find(p => p.index === playerId);
+    const user = playersStore.getById(playerId);
 
     if (!player) {
         player = {
-            name: `Player ${game.players.length + 1}`,
+            name: `Player ${game.players.length + 1}: ${user?.name ?? ''}`,
             passwordHash: '',
             index: playerId,
             score: 0,
@@ -61,15 +64,13 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
         id: 0
     }));
 
-    game.players.forEach(p => {
-        p.ws?.send(JSON.stringify({
-            type: 'player_joined',
-            data: {
-                playerName: player!.name,
-                playerCount: game.players.length
-            },
-            id: 0
-        }));
+    broadcastToGame(game, {
+        type: 'player_joined',
+        data: {
+            playerName: player.name,
+            playerCount: game.players.length
+        },
+        id: 0
     });
 
     const publicPlayers = game.players.map(({ name, index, score }) => ({
@@ -78,11 +79,9 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
         score
     }));
 
-    game.players.forEach(p => {
-        p.ws?.send(JSON.stringify({
-            type: 'update_players',
-            data: publicPlayers,
-            id: 0
-        }));
+    broadcastToGame(game, {
+        type: 'update_players',
+        data: publicPlayers,
+        id: 0
     });
 }

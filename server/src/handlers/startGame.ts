@@ -3,6 +3,7 @@ import { gamesStore } from '../storage/gamesStore.js';
 import { connectionRegistry } from '../server/connectionRegistry.js';
 import * as C from '../constants/index.js';
 import type * as T from '../types/index.js';
+import { finishQuestion } from '../core/finishQuestion.js';
 
 const { WAITING, IN_PROGRESS } = C.GAME_STATUS;
 
@@ -90,7 +91,6 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
     });
 
     game.questionTimer = setTimeout(() => {
-        // TODO: next question => next
-        // finishQuestion(game);
+        finishQuestion(game);
     }, question.timeLimitSec * 1000);
 }
