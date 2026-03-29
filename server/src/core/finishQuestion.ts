@@ -69,12 +69,10 @@ export function finishQuestion(game: T.Game) {
         timeLimitSec: nextQuestion.timeLimitSec
     };
 
-    game.players.forEach(p => {
-        p.ws?.send(JSON.stringify({
-            type: 'question',
-            data: payload,
-            id: 0
-        }));
+    broadcastToGame(game, {
+        type: 'question',
+        data: payload,
+        id: 0
     });
 
     game.questionTimer = setTimeout(() => {
