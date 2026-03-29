@@ -6,6 +6,7 @@ import { gamesStore } from '../storage/index.js';
 
 import * as C from '../constants/index.js';
 import type * as T from '../types/index.js';
+import { finishQuestion } from '../core/finishQuestion.js';
 
 const { WAITING, IN_PROGRESS } = C.GAME_STATUS;
 

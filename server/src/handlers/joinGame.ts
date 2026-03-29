@@ -4,7 +4,7 @@ import { connectionRegistry } from '../server/connectionRegistry.js';
 import * as C from '../constants/index.js';
 import type * as T from '../types/index.js';
 import { playersStore } from '../storage/playersStore.js';
-import { broadcastToGame, sendError } from '../server/broadcaster.js';
+import { broadcastToGame } from '../server/broadcaster.js';
 
 const { WAITING } = C.GAME_STATUS;
 
@@ -12,17 +12,32 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
     const playerId = connectionRegistry.getPlayerId(ws);
 
     if (!playerId) {
-        return sendError(ws, C.NOT_REGISTERED);
+        ws.send(JSON.stringify({
+            type: 'game_joined',
+            data: { gameId: '' },
+            id: 0
+        }));
+        return;
     }
 
     const game = gamesStore.getByCode(data.code);
 
     if (!game) {
-        return sendError(ws, C.GAME_NOT_FOUND);
+        ws.send(JSON.stringify({
+            type: 'game_joined',
+            data: { gameId: '' },
+            id: 0
+        }));
+        return;
     }
 
     if (game.status !== WAITING) {
-        return sendError(ws, C.GAME_ALREADY_STARTED);
+        ws.send(JSON.stringify({
+            type: 'game_joined',
+            data: { gameId: '' },
+            id: 0
+        }));
+        return;
     }
 
     let player = game.players.find(p => p.index === playerId);
@@ -42,6 +57,12 @@ export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number)
     } else {
         player.ws = ws;
     }
+
+    ws.send(JSON.stringify({
+        type: 'game_joined',
+        data: { gameId: game.id },
+        id: 0
+    }));
 
     broadcastToGame(game, {
         type: 'player_joined',
