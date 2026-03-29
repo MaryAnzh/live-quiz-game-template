@@ -7,23 +7,22 @@ import { playersStore } from '../storage/playersStore.js';
 import { broadcastToGame, sendError } from '../server/broadcaster.js';
 
 const { WAITING } = C.GAME_STATUS;
-const { JOIN_GAME } = C.COMMANDS;
 
 export function joinGameHandler(ws: WebSocket, data: T.JoinGameData, id: number) {
     const playerId = connectionRegistry.getPlayerId(ws);
 
     if (!playerId) {
-        return sendError(ws, C.NOT_REGISTERED, JOIN_GAME);
+        return sendError(ws, C.NOT_REGISTERED);
     }
 
     const game = gamesStore.getByCode(data.code);
 
     if (!game) {
-        return sendError(ws, C.GAME_NOT_FOUND, JOIN_GAME);
+        return sendError(ws, C.GAME_NOT_FOUND);
     }
 
     if (game.status !== WAITING) {
-        return sendError(ws, C.GAME_ALREADY_STARTED, JOIN_GAME);
+        return sendError(ws, C.GAME_ALREADY_STARTED);
     }
 
     let player = game.players.find(p => p.index === playerId);

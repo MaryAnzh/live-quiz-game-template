@@ -8,16 +8,16 @@ import * as C from '../constants/index.js';
 import * as U from '../utils/index.js';
 import { sendError } from '../server/broadcaster.js';
 const { WAITING } = C.GAME_STATUS;
-const { CREATE_GAME } = C.COMMANDS;
 
 export function createGameHandler(ws: WebSocket, data: T.CreateGameData, id: number) {
     const hostId = connectionRegistry.getPlayerId(ws);
 
     if (!hostId) {
-        return;
+        return sendError(ws, C.NOT_HOST);
     }
+
     if (!data.questions || data.questions.length === 0) {
-        return sendError(ws, C.EMPTY_QUESTIONS_LIST, CREATE_GAME);
+        return sendError(ws, C.EMPTY_QUESTIONS_LIST);
     }
 
     const gameId = U.generateId();

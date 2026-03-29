@@ -28,9 +28,9 @@ export function sendToHost(game: T.Game, message: T.WSMessage) {
     if (ws) ws.send(JSON.stringify(message));
 }
 
-export function sendError(ws: WebSocket, message: string, type: string) {
+export function sendError(ws: WebSocket, message: string) {
     ws.send(JSON.stringify({
-        type,
+        type: 'error',
         data: { message },
         id: 0
     }));

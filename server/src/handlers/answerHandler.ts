@@ -8,37 +8,36 @@ import * as C from '../constants/index.js';
 import type * as T from '../types/index.js';
 
 const { IN_PROGRESS } = C.GAME_STATUS;
-const { ANSWER } = C.COMMANDS;
 
 export function answerHandler(ws: WebSocket, data: T.AnswerData, id: number) {
     const playerId = connectionRegistry.getPlayerId(ws);
 
     if (!playerId) {
-        return sendError(ws, C.NOT_REGISTERED, ANSWER);
+        return sendError(ws, C.NOT_REGISTERED);
     }
 
     const game = gamesStore.getById(data.gameId);
 
     if (!game) {
-        return sendError(ws, C.GAME_NOT_FOUND, ANSWER);
+        return sendError(ws, C.GAME_NOT_FOUND);
     }
 
     if (game.status !== IN_PROGRESS) {
-        return sendError(ws, C.GAME_NOT_IN_PROGRESS, ANSWER);
+        return sendError(ws, C.GAME_NOT_IN_PROGRESS);
     }
 
     if (data.questionIndex !== game.currentQuestion) {
-        return sendError(ws, C.INVALID_QUESTION_INDEX, ANSWER);
+        return sendError(ws, C.INVALID_QUESTION_INDEX);
     }
 
     const player = game.players.find(p => p.index === playerId);
 
     if (!player) {
-        return sendError(ws, C.PLAYER_NOT_IN_GAME, ANSWER);
+        return sendError(ws, C.PLAYER_NOT_IN_GAME);
     }
 
     if (player.hasAnswered) {
-        return sendError(ws, C.ALREADY_ANSWERED, ANSWER);
+        return sendError(ws, C.ALREADY_ANSWERED);
     }
 
     const question = game.questions[game.currentQuestion];

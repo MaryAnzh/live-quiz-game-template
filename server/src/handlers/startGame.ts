@@ -8,27 +8,26 @@ import * as C from '../constants/index.js';
 import type * as T from '../types/index.js';
 
 const { WAITING, IN_PROGRESS } = C.GAME_STATUS;
-const { START_GAME } = C.COMMANDS;
 
 export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: number) {
     const playerId = connectionRegistry.getPlayerId(ws);
 
     if (!playerId) {
-        return sendError(ws, C.NOT_REGISTERED, START_GAME);
+        return sendError(ws, C.NOT_REGISTERED);
     }
 
     const game = gamesStore.getById(data.gameId);
 
     if (!game) {
-        return sendError(ws, C.GAME_NOT_FOUND, START_GAME);
+        return sendError(ws, C.GAME_NOT_FOUND);
     }
 
     if (game.hostId !== playerId) {
-        return sendError(ws, C.NOT_HOST, START_GAME);
+        return sendError(ws, C.NOT_HOST);
     }
 
     if (game.status !== WAITING) {
-        return sendError(ws, C.GAME_ALREADY_STARTED, START_GAME);
+        return sendError(ws, C.GAME_ALREADY_STARTED);
     }
 
     game.status = IN_PROGRESS;
