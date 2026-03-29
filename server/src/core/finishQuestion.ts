@@ -96,4 +96,5 @@ function finishGame(game: T.Game) {
         data: { scoreboard },
         id: 0
     });
+    clearTimeout(game.questionTimer);
 }
