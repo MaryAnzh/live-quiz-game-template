@@ -11,9 +11,9 @@ import { finishQuestion } from '../core/finishQuestion.js';
 const { WAITING, IN_PROGRESS } = C.GAME_STATUS;
 
 export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: number) {
-    const playerId = connectionRegistry.getPlayerId(ws);
+    const hostId = connectionRegistry.getPlayerId(ws);
 
-    if (!playerId) {
+    if (!hostId) {
         return sendError(ws, C.NOT_REGISTERED);
     }
 
@@ -23,7 +23,7 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
         return sendError(ws, C.GAME_NOT_FOUND);
     }
 
-    if (game.hostId !== playerId) {
+    if (game.hostId !== hostId) {
         return sendError(ws, C.NOT_HOST);
     }
 
@@ -59,6 +59,12 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
         }));
     });
 
+    ws.send(JSON.stringify({
+        type: 'question',
+        data: payload,
+        id: 0
+    }));
+
     const publicPlayers = game.players.map(({ name, index, score }) => ({
         name,
         index,
@@ -72,6 +78,12 @@ export function startGameHandler(ws: WebSocket, data: T.StartGameData, id: numbe
             id: 0
         }));
     });
+
+    ws.send(JSON.stringify({
+        type: 'update_players',
+        data: publicPlayers,
+        id: 0
+    }));
 
     game.questionTimer = setTimeout(() => {
         finishQuestion(game);
