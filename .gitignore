@@ -11,14 +11,17 @@ pids
 
 # Dependency directories
 node_modules/
+package-lock.*
 
 # TypeScript cache
 *.tsbuildinfo
 
 # dotenv environment variable files
+server/.env
 .env
 .env.*
 !.env.example
 
 # Build output
+server/dist
 dist

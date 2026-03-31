@@ -1,7 +1,10 @@
 import type { WebSocket } from 'ws';
+import * as C from '../constants/index.js';
+const { WAITING, IN_PROGRESS, FINISHED } = C.GAME_STATUS;
 
-export interface Player {
+export type Player = {
   name: string;
+  passwordHash: string;
   index: string;
   score: number;
   ws?: WebSocket;
@@ -10,58 +13,72 @@ export interface Player {
   answeredCorrectly?: boolean;
 }
 
-export interface Question {
+export type Question = {
   text: string;
   options: string[];
   correctIndex: number;
   timeLimitSec: number;
 }
 
-export interface Game {
+export type Game = {
   id: string;
   code: string;
   hostId: string;
   questions: Question[];
   players: Player[];
   currentQuestion: number;
-  status: 'waiting' | 'in_progress' | 'finished';
+  status: typeof WAITING | typeof IN_PROGRESS | typeof FINISHED;
   questionStartTime?: number;
   questionTimer?: NodeJS.Timeout;
   playerAnswers: Map<string, { answerIndex: number; timestamp: number }>;
 }
 
-export interface User {
+export type User = {
   name: string;
   password: string;
   index: string;
   ws?: WebSocket;
 }
 
-export interface WSMessage {
+export type WSMessage = {
   type: string;
   data: any;
   id: number;
 }
 
-export interface RegData {
+export type RegData = {
   name: string;
   password: string;
 }
 
-export interface CreateGameData {
+export type CreateGameData = {
   questions: Question[];
 }
 
-export interface JoinGameData {
+export type JoinGameData = {
   code: string;
 }
 
-export interface StartGameData {
+export type StartGameData = {
   gameId: string;
 }
 
-export interface AnswerData {
+export type AnswerData = {
   gameId: string;
   questionIndex: number;
   answerIndex: number;
+}
+
+export type JoinGameResult =
+  | { ok: true; game: Game }
+  | { ok: false; error: string };
+
+export type JoinPlayerType = {
+  setGameId: string;
+  setScreen: 'lobby';
+}
+
+export type PlayerJoinedMessage = {
+  playerName: string;
+  playerCount: number;
 }

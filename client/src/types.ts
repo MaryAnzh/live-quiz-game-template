@@ -74,10 +74,6 @@ export interface PlayerJoinedMessage {
   playerCount: number;
 }
 
-export interface UpdatePlayersMessage {
-  // data is the array itself: Player[]
-}
-
 export interface QuestionMessage {
   questionNumber: number;
   totalQuestions: number;
